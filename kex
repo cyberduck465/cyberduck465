@@ -1,0 +1,71 @@
+#!/bin/bash
+
+# LXQt VNC 啟動腳本 (整合 kex 與 vncstart)
+# 適用於 Termux Proot Ubuntu
+
+function start-kex() {
+    if [ ! -f ~/.vnc/passwd ]; then
+        echo "[INFO] VNC 密碼尚未設定，請輸入密碼："
+        vncpasswd
+    fi
+
+    USR=$(whoami)
+    SCREEN=":1"  # 固定使用 :1 (5901)
+
+    export MOZ_FAKE_NO_SANDBOX=1
+    export HOME=${HOME}
+    export USER=${USR}
+
+    # 建立 ~/.vnc/xstartup 啟動 LXQt
+    mkdir -p ~/.vnc
+    cat > ~/.vnc/xstartup <<EOF
+#!/bin/bash
+unset SESSION_MANAGER
+unset DBUS_SESSION_BUS_ADDRESS
+exec startxfce4
+EOF
+    chmod +x ~/.vnc/xstartup
+
+    # 啟動 VNC Server
+    echo "[INFO] 啟動 LXQt VNC on $SCREEN (5901)"
+    vncserver $SCREEN -geometry 2048x1280
+}
+
+function stop-kex() {
+    echo "[INFO] 停止 VNC Server on :1"
+    vncserver -kill :1
+    #rm -f /tmp/.X1-lock /tmp/.X11-unix/X1
+}
+
+function status-kex() {
+    vncserver -list
+}
+
+function passwd-kex() {
+    vncpasswd
+}
+
+function kill-kex() {
+    pkill Xtigervnc
+}
+
+case $1 in
+    start)
+        start-kex
+        ;;
+    stop)
+        stop-kex
+        ;;
+    status)
+        status-kex
+        ;;
+    passwd)
+        passwd-kex
+        ;;
+    kill)
+        kill-kex
+        ;;
+    *)
+        echo "用法: $0 {start|stop|status|passwd|kill}"
+        ;;
+esac
