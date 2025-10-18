@@ -6,7 +6,7 @@
 function start-kex() {
     if [ ! -f ~/.vnc/passwd ]; then
         echo "[INFO] VNC 密碼尚未設定，請輸入密碼："
-        vncpasswd
+#        vncpasswd
     fi
 
     USR=$(whoami)
@@ -22,13 +22,14 @@ function start-kex() {
 #!/bin/bash
 unset SESSION_MANAGER
 unset DBUS_SESSION_BUS_ADDRESS
+dbus-launch
 exec startxfce4
 EOF
     chmod +x ~/.vnc/xstartup
 
     # 啟動 VNC Server
     echo "[INFO] 啟動 LXQt VNC on $SCREEN (5901)"
-    vncserver $SCREEN -geometry 2048x1280
+    vncserver $SCREEN -geometry 2048x1280 --I-KNOW-THIS-IS-INSECURE
 }
 
 function stop-kex() {
