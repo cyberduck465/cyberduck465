@@ -29,13 +29,16 @@ EOF
 
     # 啟動 VNC Server
     echo "[INFO] 啟動 LXQt VNC on $SCREEN (5901)"
-    vncserver $SCREEN -geometry 2048x1280 --I-KNOW-THIS-IS-INSECURE
+    rm -f /tmp/.X1-lock
+    rm -f /tmp/.X11-unix/X1
+    vncserver $SCREEN -geometry 1920x1080 --I-KNOW-THIS-IS-INSECURE
 }
 
 function stop-kex() {
     echo "[INFO] 停止 VNC Server on :1"
     vncserver -kill :1
-    #rm -f /tmp/.X1-lock /tmp/.X11-unix/X1
+    rm -f /tmp/.X1-lock
+    rm -f /tmp/.X11-unix/X1
 }
 
 function status-kex() {
@@ -48,6 +51,8 @@ function passwd-kex() {
 
 function kill-kex() {
     pkill Xtigervnc
+    rm -f /tmp/.X1-lock 
+    rm -f/tmp/.X11-unix/X1
 }
 
 case $1 in
